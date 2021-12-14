@@ -64,16 +64,18 @@ function addPet({ navigation }) {
     
   }
   
-  // const z=[id,Name,Type,Age,gender]
+  // const z = [id, Name, Type, Age, gender]
+  // console.log(z);
   
   // const za=[{email:'email'},{ name: 'image',    // note: the name will be image, it will not be changed
   //         filename: 'image.jpg',
   //         type: 'image/jpg',
   //        data: imageData,}]
-  console.log(imageData);
+  // console.log(imageData);
   
   const add_Pet = async () => {
-    let my_url = "https://quaidstp.com/projects/test/uploadImage.php";
+    let my_url = 'https://quaidstp.com/projects/petcare/add_pet.php';
+      // let my_url = 'https://quaidstp.com/projects/test/uploadImage.php';
 
     RNFetchBlob.fetch('POST', my_url, {
       Authorization: "Bearer access-token",
@@ -82,11 +84,26 @@ function addPet({ navigation }) {
     }, [
       // custom content type
       { name: 'image', filename: 'image_1.jpg', type: 'image/jpg', data: imageData },
-    {email:'muzammil'}
-
-    ]).then((resp) => {
+      { name: 'uid', data: id },
+      { name: 'name', data: Name },
+      { name: 'type', data: Type },
+      { name: 'age', data: Age },
+      {name:'gender',data:gender},
+      
+    ]).then(response=> response.json())
+  .then((resp)=>{
       // ...
-      console.warn(resp);
+      
+      // console.log(resp);
+      if (resp.status==1) {
+        navigation.navigate('Home');
+      } else if(resp.status==2) {
+        alert(resp.message);
+      } else if (resp.status == 75) {
+        alert(resp.message);
+      } else {
+        alert(resp.message);
+      }
     }).catch((err) => {
       // ...
       console.log(err);

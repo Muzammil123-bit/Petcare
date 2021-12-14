@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
 import React, { useState } from 'react';
+import RNFS from 'react-native-fs';
 import { useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
@@ -14,6 +15,10 @@ import {
   Modal} from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import Geolocation from '@react-native-community/geolocation';
+import ImagePicker from 'react-native-image-crop-picker';
+import RNFetchBlob from 'rn-fetch-blob'
+
+
 function pets({navigation}) {
   
   const [id,setId]=useState(null);
@@ -23,7 +28,12 @@ function pets({navigation}) {
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
   const [lat, setLat] = useState(null);
+  // const [path, setPath] = useState('');
+  // const [mime, setMime] = useState('');
   const [long, setLong] = useState(null);
+  const [adoptStatus, setAdoptStatus] = useState(false);
+  const [trackingStatus, setTrackingStatus] = useState(false);
+ 
   
 
   const insertData=(data)=>setData(data);
@@ -63,6 +73,62 @@ function pets({navigation}) {
   //   setPetId(id);
   //   // console.warn(petId);
   // }
+  const select_id = (item) => setPetId(item);
+  
+  let petId = null;
+  let path = '';
+  let mime = '';
+  const chooseVideo = () => {
+    
+   ImagePicker.openPicker({
+        mediaType: "video",
+   }).then((video) => {
+     console.log(video);
+        path=(video.path);
+        mime=(video.mime);
+        post_Video(petId)
+      })
+      
+    
+  }
+  
+  const post_Video = async (pet_Id) => {
+   
+    
+        // go do that thing
+        let my_url = 'https://quaidstp.com/projects/petcare/add_pet_video.php';
+        // let my_url = 'https://quaidstp.com/projects/test/uploadImage.php';
+
+        await RNFetchBlob.fetch('POST', my_url, {
+          Authorization: "Bearer access-token",
+          otherHeader: "foo",
+          'Content-Type': 'multipart/form-data',
+        }, [
+          // custom content type
+          { name: 'video', filename: 'Video.mp4', data: RNFetchBlob.wrap(path) },
+          { name: 'uid', data: id },
+          { name: 'pet_id', data: pet_Id }
+      
+      
+        ]).then(response => response.json())
+          .then((resp) => {
+            alert(resp.message);
+            // ...
+            // console.log(resp);
+            // if (resp.status==1) {
+            //   navigation.navigate('Home');
+            // } else if(resp.status==2) {
+            //   alert(resp.message);
+            // } else if (resp.status == 75) {
+            //   alert(resp.message);
+            // } else {
+            //   alert(resp.message);
+            // }
+          }).catch((err) => {
+            // ...
+            console.log(err);
+          })
+    }
   const pet_Tracking = async (petId) => {
     // console.warn(petId);
     let my_url = "https://quaidstp.com/projects/petcare/add_track.php";
@@ -80,10 +146,11 @@ function pets({navigation}) {
     })
       .then(response => response.json())
       .then(data => {
-        console.warn(data);
+        // console.warn(data);
         
         if (data.status == '1') {
           alert(data.message);
+          navigation.navigate('Home');
         } else if (data.status == '75') {
            alert(data.message);
         } 
@@ -152,10 +219,10 @@ function pets({navigation}) {
     })
       .then(response => response.json())
       .then(data => {
-        console.warn(data);
+        // console.warn(data);
         
         if (data.status == '1') {
-          // alert(data.message);
+          alert(data.message);
           navigation.navigate('Home');
         } else if (data.status == '75') {
            alert(data.message);
@@ -188,33 +255,20 @@ function pets({navigation}) {
     })
       .then(response => response.json())
       .then(data => {
+        console.log(data);
         if (data.status=='1') {
-          const temp = data.message;
-          
-          temp.forEach(temp => {
-            if (temp.type == 'Dog') {
-              temp.image = require('./assets/Pets/dog.png')
+          const temp=data.message
+          temp.forEach((temp) => {
+            if (temp.adopt_status=='true') {
+              setAdoptStatus(true);
             }
-             if (temp.type == 'cat') {
-              temp.image = require('./assets/Pets/cat.png');
-            }
-            if (temp.type == 'Bird') {
-              temp.image = require('./assets/Pets/bird.png');
-            }
-             if (temp.type == 'Fish') {
-              temp.image = require('./assets/Pets/fish.png');
-            }
-             if (temp.type == 'Pet Poultry') {
-              temp.image = require('./assets/Pets/poultry.png')
-            }
-             if (temp.type == 'Rabbit') {
-              temp.image = require('./assets/Pets/rabbit.png')
-            }
-             if (temp.type == 'Reptile') {
-              temp.image = require('./assets/Pets/reptile.png')
+            if (temp.tracking_status == 'true') {
+              setTrackingStatus(true);
             }
           });
-           
+         
+          
+          
           
           // console.warn(temp);
           //  if (data.message.type=='Dog') {
@@ -260,7 +314,7 @@ function pets({navigation}) {
           style={styles.contentList}
           columnWrapperStyle={styles.listContainer}
         data={data}
-          keyExtractor= {(item) => {
+        keyExtractor={(item) => {
             return item.id;
           }}
           renderItem={({item}) => {
@@ -269,33 +323,42 @@ function pets({navigation}) {
               
               <TouchableOpacity style={styles.card} onPress={() => { navigation.push('Pet Profile', item) }}>
               
-                <Image style={styles.image} source={item.image} />
+                <Image style={styles.image} source={{uri:item.picture_link}} />
               <View style={styles.cardContent}>
                 <Text style={styles.name}>{item.type}</Text>
                   <Text style={styles.count}>{item.name}</Text>
                   <View style={styles.buttonContainer}>
-                  <TouchableOpacity style={styles.followButton} onPress={() => {
+                    {!adoptStatus ?(<TouchableOpacity style={styles.followButton} onPress={() => {
         
-                    adoptable_Pet(item.id);
-                }}>
-                  <Text style={styles.followButtonText}>Adopt</Text>  
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.followButton} onPress={() => {
+                      adoptable_Pet(item.id);
+                    }}>
+                      <Text style={styles.followButtonText}>Adopt</Text>
+                    </TouchableOpacity>): null}
+                    {adoptStatus ? (<TouchableOpacity style={styles.followButton} onPress={() => {
         
-                    navigation.push('Applicant',item)
-                }}>
-                  <Text style={styles.followButtonText}>Applicants</Text>  
-                    </TouchableOpacity>
+                      navigation.push('Applicant', item)
+                    }}>
+                      <Text style={styles.followButtonText}>Applicants</Text>
+                    </TouchableOpacity>) : null}
                   </View>
                   <View style={styles.secondButtonContainer}>
                   <TouchableOpacity style={styles.followButton} onPress={()=>{navigation.push('Add Reminder',item)}}>
                       <Text style={styles.followButtonText}>Add Reminder</Text>
                     </TouchableOpacity>
-                      <TouchableOpacity style={styles.followButton} onPress={()=>pet_Tracking(item.id)}>
+                    {!trackingStatus ? (<TouchableOpacity style={styles.followButton} onPress={() => {
+                      pet_Tracking(item.id);
+                    }}>
                       <Text style={styles.followButtonText}>Start Tracking</Text>
-                    </TouchableOpacity>
-                     <TouchableOpacity style={styles.followButton} onPress={()=>location_Pet(item.id)}>
+                    </TouchableOpacity>) : null}
+                    {trackingStatus ? (<TouchableOpacity style={styles.followButton} onPress={() => location_Pet(item.id)}>
                       <Text style={styles.followButtonText}>Location</Text>
+                    </TouchableOpacity>) : null}
+                    <TouchableOpacity style={styles.followButton} onPress={() => {
+                      petId=item.id
+                      chooseVideo();
+                    }
+          }>
+                      <Text style={styles.followButtonText}>Upload Video</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -382,12 +445,12 @@ const styles = StyleSheet.create({
   secondButtonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginLeft:-60
+    marginLeft:-75
   },
   followButton: {
     marginTop:10,
-    height:45,
-    width:100,
+    height:40,
+    width:105,
     padding:10,
     flexDirection: 'row',
     justifyContent: 'center',
@@ -413,7 +476,7 @@ const styles = StyleSheet.create({
   },
   followButtonText:{
     color: "white",
-    fontSize:12,
+    fontSize:10,
   },
   modalFollowButtonText: {
     color: 'white',

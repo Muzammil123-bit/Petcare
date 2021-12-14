@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-undef */
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react';
 import {
   StyleSheet,
@@ -16,13 +17,9 @@ function Home({navigation}) {
         {id:1, title: "Pets", 'image':require("./assets/Home/pets.png")},
         {id:2, title: "Vets", image:require("./assets/Home/vets.png")},
         {id:3, title: "Adopt Pet", image:require("./assets/Home/adopt.png")} ,
-        {id:4, title: "Reminder", image:require("./assets/Home/reminders.png")} ,
-        // {id:4, title: "Option 5", image:"https://img.icons8.com/color/70/000000/shutdown.png"} ,
-        // {id:5, title: "Option 6", image:"https://img.icons8.com/color/70/000000/traffic-jam.png"} ,
-        // {id:6, title: "Option 7", image:"https://img.icons8.com/dusk/70/000000/visual-game-boy.png"} ,
-        // {id:8, title: "Option 8", image:"https://img.icons8.com/flat_round/70/000000/cow.png"} ,
-        // {id:9, title: "Option 9", image:"https://img.icons8.com/color/70/000000/coworking.png"} ,
-        // {id:9, title: "Option 10",image:"https://img.icons8.com/nolan/70/000000/job.png"} ,
+        { id: 4, title: "Reminder", image: require("./assets/Home/reminders.png") },
+        { id: 5, title: "News Feed", image: require("./assets/Home/pets.png") },
+        {id:6, title: "Logout", image:require("./assets/Home/logout.png")}
       ]
     };
 
@@ -76,7 +73,15 @@ function Home({navigation}) {
             // else{
             return (
               <View>
-                <TouchableOpacity style={styles.card} onPress={() => {navigation.navigate(item.title)}}>
+                <TouchableOpacity style={styles.card} onPress={() => {
+                  if (item.title === 'Logout') {
+                    AsyncStorage.removeItem('Loginkey');
+                    navigation.navigate('Login');
+                  }
+                  else {
+                    navigation.navigate(item.title)
+                  }
+                }}>
                   <Image style={styles.cardImage} source={item.image}/>
                 </TouchableOpacity>
 

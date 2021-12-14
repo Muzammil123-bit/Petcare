@@ -18,14 +18,14 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 function LoginView({navigation}) {
    const [username,setUsername]=useState('');
-   const[Password,setPassword]=useState('');
+  const [Password, setPassword] = useState('');
+  const [id, setId] = useState(null);
    const z=[username,Password]
 
   const onClickListener = (viewId) => {
     Alert.alert("Alert", "Button pressed "+viewId);
   }
 
-  
  
 
   const checkLogin=async()=>{
@@ -79,7 +79,7 @@ function LoginView({navigation}) {
             placeholder="Username"
             placeholderTextColor={'#333333'}
               value={username}
-              underlineColorAndroid='transparent'
+            underlineColorAndroid='transparent'
               onChangeText={(name) =>setUsername(name)}/>
         </View>
         
@@ -93,7 +93,13 @@ function LoginView({navigation}) {
               underlineColorAndroid='transparent'
               onChangeText={(password) => setPassword(password)}/>
         </View>
-        <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} onPress={()=>checkLogin()}>
+        <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} onPress={() => {
+           
+          checkLogin()
+          setUsername('');
+          setPassword('');
+         
+        }}>
           <Text style={styles.loginText}>Login</Text>
         </TouchableHighlight>
         {/* <TouchableHighlight style={styles.buttonContainer} onPress={() => onClickListener('restore_password')}>

@@ -28,6 +28,7 @@ import adopt_Pet from './src/Adopt Pet';
 import reminder from './src/Reminder';
 import add_Reminder from './src/Add Reminder';
 import Applicant from './src/Applicants';
+import news_Feed from './src/Newspeak';
 import {NavigationContainer} from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
@@ -47,7 +48,8 @@ function App() {
   
 AsyncStorage.getItem('Loginkey').then((value)=>{
            setId(value);
-         })
+})
+  
   
   const [isLoading,setIsLoading]=useState(true);
   useEffect(()=>{
@@ -67,8 +69,11 @@ AsyncStorage.getItem('Loginkey').then((value)=>{
       
         <RootStack.Navigator initialRouteName='Home'>
      <RootStack.Screen name="Home" component={Home} />
+     <RootStack.Screen name="Login" component={LoginView}/>
+     <RootStack.Screen name="Register" component={RegisterView}/>
      <RootStack.Screen name="Add Reminder" component={add_Reminder} />
-     <RootStack.Screen name="Applicant" component={Applicant}/> 
+     <RootStack.Screen name="Applicant" component={Applicant} />
+     <RootStack.Screen name="News Feed" component={news_Feed}/> 
          <RootStack.Screen name="Adopt Pet" component={adopt_Pet}/>
          <RootStack.Screen name="Vets" component={vets}/> 
          <RootStack.Screen name="Pet Profile" component={pet_Profile}/> 
@@ -88,7 +93,7 @@ AsyncStorage.getItem('Loginkey').then((value)=>{
     </RootStack.Navigator>
     </NavigationContainer>);
  }
- else
+ else if(id==null)
  {
   return (
     <NavigationContainer>
@@ -96,7 +101,8 @@ AsyncStorage.getItem('Loginkey').then((value)=>{
         <Stack.Navigator initialRouteName='Login'>
           <Stack.Screen name="Register" component={RegisterView}/>
         <Stack.Screen name="Adopt Pet" component={adopt_Pet} />
-        <Stack.Screen name="Applicant" component={Applicant}/> 
+        <Stack.Screen name="Applicant" component={Applicant} />
+        <Stack.Screen name="News Feed" component={news_Feed}/> 
          <Stack.Screen name="Home" component={Home}/> 
          <Stack.Screen name="Add Reminder" component={add_Reminder}/> 
          <Stack.Screen name="Vets" component={vets}/> 

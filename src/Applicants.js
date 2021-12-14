@@ -92,7 +92,8 @@ function Applicant({route,navigation}) {
         // console.warn(data);
         
         if (data.status == '1') {
-           navigation.navigate('Home');
+          navigation.navigate('Home');
+          alert(data.message);
             
           
         } else if (data.status == '75') {

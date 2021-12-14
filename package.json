@@ -21,6 +21,7 @@
     "react-native": "0.66.3",
     "react-native-date-picker": "^4.1.2",
     "react-native-dropdown-picker": "^5.2.3",
+    "react-native-fs": "^2.18.0",
     "react-native-gesture-handler": "^1.10.3",
     "react-native-image-base64": "^0.1.4",
     "react-native-image-crop-picker": "^0.37.2",
@@ -28,6 +29,9 @@
     "react-native-material-dropdown": "^0.11.1",
     "react-native-safe-area-context": "^3.3.2",
     "react-native-screens": "^3.9.0",
+    "react-native-vector-icons": "^9.0.0",
+    "react-native-video": "^2.3.1",
+    "react-native-video-player": "^0.12.0",
     "react-phone-number-input": "^3.1.41",
     "rn-fetch-blob": "^0.12.0"
   },

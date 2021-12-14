@@ -61,7 +61,7 @@ const z=[id]
       .then(response => response.json())
       .then(data => {
         if (data.status=='1') {
-          // console.warn(data.message)
+          // console.log(data.message)
           // if (data.message.type=='Reptile') {
           //   data.message.splice(2,0,{image:'https://img.icons8.com/color/100/000000/real-estate.png'})
           // console.warn(data.message)
@@ -87,7 +87,7 @@ const z=[id]
   useEffect(()=>{
     setTimeout(() => {
       setIsLoading(false);
-    }, 500);
+    }, 2000);
   });
   if (isLoading) {
     return(
@@ -112,7 +112,7 @@ const z=[id]
           return (
               
             <View style={styles.card} onPress={() => {clickEventListener(item)}}>
-              <Image style={styles.image} source={{uri:'https://img.icons8.com/clouds/100/000000/groups.png'}}/>
+              <Image style={styles.image} source={{ uri: item.picture_link}}/>
               <View style={styles.cardContent}>
                 <Text style={styles.name}>{item.name}</Text>
                 <Text style={styles.count}>Type:{item.type}</Text>
